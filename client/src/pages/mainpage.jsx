@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import axios  from "axios";
+
 
 function MainPage() {
   // States for the form fields
@@ -7,18 +9,27 @@ function MainPage() {
   const [targetCurrency, setTargetCurrency] = useState('');
   const [amountInSourceCurrency, setAmountInSourceCurrency] = useState('');
   const [convert, setConvert] = useState(0);
-
+  const [currencyNames,setCurrencyNames] = useState([]);
 
   //handleSubmit methode
   const handleSubmit = (e) =>{
     e.preventDefault();
-    console.log(
-      date,
-      setSourceCurrency,
-      setTargetCurrency,
-      amountInSourceCurrency
-    );
   }
+
+  //Get all currency names
+  useEffect(() => {
+    const getCurrencyName = async () => {
+      try {
+        const responce =await axios.get(
+          "http://localhost:5000/getAllCurrencies"
+        );
+        setCurrencyNames(responce.date);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    getCurrencyName();
+  },[]);
   return (
     <div>
       <h1 className='lg:mx-32 text-5xl font-bold text-blue-500'>Convert Your Currencies Today</h1>
@@ -48,6 +59,11 @@ function MainPage() {
                 required
               >
                 <option>Select Source Currency</option>
+                {Object.keys(currencyNames).map((currency)=>(
+                  <option className='p-1' key={currency} value={currency}>
+                    {currencyNames[currency]}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="mb-4">
